@@ -1,0 +1,12 @@
+/target/
+src/main/resources/background/clinton.gif
+src/main/resources/background/trump.png
+src/main/resources/TrumpClinton1.html
+src/main/resources/TrumpClinton1.txt
+src/main/resources/TrumpClinton1_backup.txt
+org.eclipse.jdt.core.prefs
+.project
+.classpath
+output/wordcloud/Clinton.png
+output/wordcloud/difference.png
+output/wordcloud/Trump.png
