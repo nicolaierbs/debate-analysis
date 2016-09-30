@@ -20,7 +20,7 @@ import eu.erbs.debates.wordcloud.WordCloudGenerator.Politician;
 
 public class AnalysisChain {
 	
-	private static final String[] INTERESTING_WORDS = new String[]{"tremendous", "wrong", "correct", "right"};
+	private static final String[] INTERESTING_WORDS = new String[]{"tremendous", "wrong", "correct", "right", "donald", "trump","hillary","secretary","clinton"};
 
 	public static void main(String[] args) throws Exception {
 		List<TalkEvent> talkEvents = DebateLoader.loadDebate("TrumpClinton1.txt");

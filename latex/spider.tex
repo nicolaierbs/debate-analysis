@@ -1,0 +1,257 @@
+\documentclass[12pt,a4paper, numbers=endperiod, parindent=half, twoside]{scrartcl}
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{1em}
+%\usepackage[applemac]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand\familydefault{phv}
+\usepackage[T1]{fontenc}
+\usepackage{setspace} 
+\onehalfspacing 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ToDo-Notes %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[ngerman]{todonotes}
+% \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+%%Packages for Radar graph
+\usepackage[upright]{fourier} 
+%\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+\usepgflibrary{arrows} % for pgf-umlsd
+\usepackage{tkz-kiviat,numprint,fullpage} 
+%\usetikzlibrary{arrows}
+\usetikzlibrary{arrows,shadows} % for pgf-umlsd
+%\usepackage[underline=true,rounded corners=false]{pgf-umlsd}
+
+\usepackage{eurosym}
+
+\usepackage{booktabs}
+
+\usepackage{enumitem}
+
+\usepackage{geometry}
+\geometry{a4paper,left=25mm,right=20mm,top=27mm,bottom=1.5 cm,headheight=25mm, footskip=1.5cm, includeheadfoot}
+\setkomafont{pagefoot}{\normalfont\sffamily}
+
+% create a shortcut to typeset table headings
+\usepackage{lscape}
+\newcommand\tabhead[1]{\small\textbf{#1}}
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+
+\usepackage{numprint}
+\usepackage{tabularx}
+% Tabellenbreite automatisch berechnen mit tabularX
+\usepackage{booktabs,multirow}
+\usepackage{longtable}
+\usepackage{forloop,supertabular}
+\usepackage[autostyle=true,german=quotes]{csquotes}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+
+%\usepackage{subfig}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{placeins}
+\graphicspath{{img/}{images/}{./}}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{graphicx}
+\usepackage{scrpage2}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\usetikzlibrary{shapes,arrows}
+\colorlet{helpful}{lime!70}
+\colorlet{harmful}{red!30}
+\colorlet{internal}{yellow!20}
+\colorlet{external}{cyan!30}
+\colorlet{S}{helpful!50!internal}
+\colorlet{W}{harmful!50!internal}
+\colorlet{O}{helpful!50!external}
+\colorlet{T}{harmful!50!external}
+
+\newcommand{\texta}{Stärken\\ \tiny (zur Erreichung des Ziels)\par}
+\newcommand{\textb}{Schwächen\\ \tiny (zur Erreichung des Ziels)\par}
+\newcommand{\textcn}{Chancen\\ \tiny (Produkt\slash Firma und Team)\par}
+\newcommand{\textdn}{Risiken\\ \tiny (Umgebung\slash Markteinflüsse)\par}
+
+\newcommand{\back}[1]{\fontsize{60}{70}\selectfont #1}
+
+% Gantt-Diagramm
+\usepackage[]{pgfgantt}
+
+\usepackage{url}
+\urlstyle{sf} 
+\usepackage[breaklinks=true]{hyperref}
+
+\usepackage{mathtools}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+% Fussnoten
+\usepackage{savefnmark}
+
+\usepackage[numbers]{natbib}
+\bibpunct{[}{]}{;}{n}{,}{,}
+
+%\hyphenation{Be-nutzer-ober-fläche}
+
+
+\usepackage{listings}
+\definecolor{lstBackground}{RGB}{245,245,245}
+\lstset{
+	language=Java,
+	backgroundcolor=\color{lstBackground},
+	basicstyle=\scriptsize,
+	mathescape=true,
+	captionpos=b,
+	frame=tlbr,
+	framesep=5pt}
+
+\newcommand{\img}[4]{
+	% #1 - source
+	% #2 - label
+	% #3 - caption
+	% #4 width, relative to \textwidth
+	\begin{figure}[!htb]
+		\centering
+		\includegraphics[width=#4\textwidth]{#1}
+		\caption{#3}
+		\label{#2}
+	\end{figure}
+}
+
+
+
+\newcommand{\imgs}[7]{
+	\begin{figure}[!htb]
+		\begin{minipage}[b]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#1}
+			\caption{#3}
+			\label{#2}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[b]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#4}
+			\caption{#6}
+			\label{#5}
+		\end{minipage}
+	\end{figure}
+}
+
+\newcommand{\imgsheight}[8]{
+	\begin{figure}[!htb]
+		\begin{minipage}[b][#8]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#1}
+			\caption{#3}
+			\label{#2}
+		\end{minipage}
+		\hfill
+		\begin{minipage}[b][#8]{#7\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{#4}
+			\caption{#6}
+			\label{#5}
+		\end{minipage}
+	\end{figure}
+}
+
+\hyphenation{Privalino}
+\hyphenation{Nicolai}
+
+
+\presetkeys%
+    {todonotes}%
+    {inline}{}
+
+\newenvironment{q}{\begin{quote}\it}{\end{quote}}
+\newenvironment{qq}{\begin{quotation}\it}{\end{quotation}}
+\setlength{\parskip}{1.5mm}
+% Verhindern von "Schusterjungen" und "Hurenkindern"
+ \clubpenalty = 10000
+ \widowpenalty = 10000
+ \displaywidowpenalty = 10000
+ \tolerance=500 %Zeilenumbruch
+
+\title{2016 Presidential Debates}
+\date{\today}
+%\author{Dr.-Ing.\,Nicolai Erbs \and Patrick Schneider \and Dr.-Ing.\,Quan Nguyen \and Leon van Dijk \and Dominik Püllen}
+\author{Dr.-Ing.\,Nicolai Erbs}
+% \usepackage[scaled]{uarial}
+% \usepackage{fontspec}
+% \setmainfont{Arial}
+\setcounter{tocdepth}{2} 
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+\selectlanguage{ngerman}
+\maketitle
+
+
+% \clearpage% oder \cleardoublepage bei twoside
+% \begingroup
+% \renewcommand*{\chapterpagestyle}{empty}
+% \pagestyle{empty}
+% \tableofcontents
+% \clearpage
+% \endgroup
+
+\renewcommand\todo[1]{}
+
+
+
+
+% **********************************************************************************************
+% NEW SECTION
+% **********************************************************************************************
+
+
+
+
+\begin{figure}[!hbt]
+\centering
+\begin{tikzpicture}
+\tkzKiviatDiagram[label distance=4cm,
+ radial = 20,
+ gap = 0.85, 
+ lattice = 9]{Flesch-Kincaid, Gunning fog, SMOG, Coleman-Liau, ARI}
+
+%Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
+%Cameron      	28960    4.16   18.92    9.89   	70.07   10.06    	7.98    	5.00   	10.70    	7.57   		10.62 
+%\tkzKiviatLine[ultra thick,color=red, fill=black!20,opacity=.5](7.57, 10.62, 10.06, 10.70, 7.98) 
+\tkzKiviatLine[ultra thick,color=red, fill=black!20,opacity=.5](3.874,6.874,7.417,8.157,3.507) 
+
+%Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
+%Johnson       		12300    4.20   29.29    8.91   	59.81   12.27   	12.62   8.00   	10.53   	11.37   		14.81 
+%\tkzKiviatLine[ultra thick,color=blue,mark=none, fill=blue!20,opacity=.5](11.37, 14.81, 12.27, 10.53, 12.62)
+\tkzKiviatLine[ultra thick,color=blue,mark=none, fill=blue!20,opacity=.5](6.186,9.423,9.127,9.123,6.233)
+
+%Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
+%Shakespeare   	29866    3.43   19.26    9.50   	90.72    6.65    	4.70    	0.00    	7.40    		4.37    		7.23 
+%\tkzKiviatLine[thin,mark=ball, mark=none,color =black](4.37, 7.23, 6.65, 7.40, 4.70) 
+\tkzKiviatLine[thin,mark=ball, mark=none,color =black](2.175, 3.615, 3.325, 3.70, 2.35) 
+
+%Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
+%Utopia'       		49108    3.94   65.30   13.78   36.97   14.10   	27.63   99.00   9.53   		22.42   	25.90 
+%\tkzKiviatLine[thin,mark=ball, mark=none, color =black](22.42, 25.9, 14.1, 9.53, 27.63) 
+
+\tkzKiviatGrad[unity=2](0)
+%\tkzKiviatGrad[](0)
+
+\node[draw=none, color=red, font=\Large] at (-1.5,4) {Trump};
+\node[draw=none, color=blue, font=\Large] at (5,4) {Clinton};
+\end{tikzpicture}
+
+\caption{Profil der geschriebenen Texte von Kindern und Erwachsenen auf Basis ausgewählter Merkmale.}
+\label{fig:radarFeatures}
+\end{figure}
+
+
+\end{document}
