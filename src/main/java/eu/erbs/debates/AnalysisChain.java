@@ -1,5 +1,6 @@
 package eu.erbs.debates;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.apache.uima.UIMAException;
 import eu.erbs.debates.analysis.DebateAnalysator;
 import eu.erbs.debates.analysis.DiversityAnalysator;
 import eu.erbs.debates.analysis.LengthAnalysator;
+import eu.erbs.debates.analysis.MostFrequentWordsAnalysator;
 import eu.erbs.debates.analysis.ReadabilityAnalysator;
 import eu.erbs.debates.analysis.WordCountAnalysator;
 import eu.erbs.debates.filter.Filter;
@@ -20,8 +22,9 @@ import eu.erbs.debates.wordcloud.WordCloudGenerator.Politician;
 
 public class AnalysisChain {
 	
-	private static final String[] INTERESTING_WORDS = new String[]{"tremendous", "wrong", "correct", "right", "donald", "trump","hillary","secretary","clinton"};
+	private static final String[] INTERESTING_WORDS = new String[]{"tremendous", "wrong", "country", "correct", "right", "donald", "trump","hillary","secretary","clinton"};
 
+	private static final File stopwordFile = new File("src/main/resources/stopwords.txt");
 	public static void main(String[] args) throws Exception {
 		List<TalkEvent> talkEvents = DebateLoader.loadDebate("TrumpClinton1.txt");
 		
@@ -32,11 +35,11 @@ public class AnalysisChain {
 		List<TalkEvent> clintonTalks =  clintonFilter.filter(talkEvents);
 		
 		//Create WordClouds
-		List<String> trumpWords = getWords(trumpTalks);
-		List<String> clintonWords = getWords(clintonTalks);
-		WordCloudGenerator.createWordCloud(trumpWords, Politician.Trump);
-		WordCloudGenerator.createWordCloud(clintonWords, Politician.Clinton);
-		WordCloudGenerator.createDifferenceWordCloud(trumpWords, clintonWords);
+//		List<String> trumpWords = getWords(trumpTalks);
+//		List<String> clintonWords = getWords(clintonTalks);
+//		WordCloudGenerator.createWordCloud(trumpWords, Politician.Trump);
+//		WordCloudGenerator.createWordCloud(clintonWords, Politician.Clinton);
+//		WordCloudGenerator.createDifferenceWordCloud(trumpWords, clintonWords);
 
 		
 		List<DebateAnalysator> analysators = new ArrayList<>();
@@ -44,6 +47,7 @@ public class AnalysisChain {
 		analysators.add(new DiversityAnalysator());
 		analysators.add(new ReadabilityAnalysator());
 		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
+		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
 		
 		
 		for(DebateAnalysator analysator : analysators){
