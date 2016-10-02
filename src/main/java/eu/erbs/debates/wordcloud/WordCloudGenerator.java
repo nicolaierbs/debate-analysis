@@ -21,9 +21,9 @@ import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.palette.LinearGradientColorPalette;
 
-public class WordCloudGenerator {
+import eu.erbs.debates.AnalysisChain.Politician;
 
-	public enum Politician {Trump,Clinton};
+public class WordCloudGenerator {
 
 	private static File CLINTON_BACKGROUND = new File("src/main/resources/background/clinton.gif");
 	private static File TRUMP_BACKGROUND = new File("src/main/resources/background/trump.png");
