@@ -47,11 +47,11 @@ public class AnalysisChain {
 		//		createWordClounds(trumpTalks, clintonTalks);
 
 		List<DebateAnalysator> analysators = new ArrayList<>();
-		analysators.add(new LengthAnalysator());
-		analysators.add(new DiversityAnalysator());
-		analysators.add(new ReadabilityAnalysator());
-		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
-		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
+//		analysators.add(new LengthAnalysator());
+//		analysators.add(new DiversityAnalysator());
+//		analysators.add(new ReadabilityAnalysator());
+//		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
+//		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
 
 
 		for(DebateAnalysator analysator : analysators){
@@ -88,10 +88,16 @@ public class AnalysisChain {
 		List<String> clintonEntityNames = getEntityNames(clintonEntities, Politician.Clinton);
 		System.out.println("Loaded " + clintonEntityNames.size() + " entity names for Clinton");
 		
+		System.out.println("Trump categories:\t" + StringUtils.join(trumpCategories, ", "));
+		System.out.println("Clinton categories:\t" + StringUtils.join(clintonCategories, ", "));
+//		createWordClouds(trumpEntityNames, clintonEntityNames);
+
+//		List<String> trumpCategoryNames = getCategoryNames(trumpCategories, Politician.Trump);
+//		System.out.println("Loaded " + trumpCategoryNames.size() + " category names for Trump");
+//		List<String> clintonCategoryNames = getCategoryNames(clintonCategories, Politician.Clinton);
+//		System.out.println("Loaded " + clintonCategoryNames.size() + " category names for Clinton");
 		
-		System.out.println("Trump entity names:\t" + StringUtils.join(trumpEntityNames, ", "));
-		System.out.println("Clinton entity names:\t" + StringUtils.join(clintonEntityNames, ", "));
-		createWordClouds(trumpEntityNames, clintonEntityNames);
+		
 }
 
 	@SuppressWarnings("unchecked")
@@ -122,6 +128,32 @@ public class AnalysisChain {
 	}
 
 	@SuppressWarnings("unchecked")
+	private static List<String> getCategoryNames(List<String> entities, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
+		File serialized = new File("output/serialized/"+politician.name()+"_categorynames.ser");
+
+		List<String> entityNames = null;
+		if(serialized.exists()){
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(serialized));
+			entityNames = (List<String>) in.readObject();
+			in.close();
+		}
+		else{
+			entityNames = new ArrayList<>();
+			String name;
+			for(String entityId : entities){
+				name = AmbiverseConnector.getName(entityId);
+				if(name !=  null){
+					entityNames.add(name);
+				}
+			}
+			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(serialized));
+			out.writeObject(entityNames);
+			out.close();
+		}
+
+		return entityNames;
+	}
+
 	private static List<String> getEntities(List<TalkEvent> talkEvents, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
 		File serialized = new File("output/serialized/"+politician.name()+"_entities.ser");
 

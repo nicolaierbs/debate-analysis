@@ -19,6 +19,7 @@ import com.kennycason.kumo.bg.PixelBoundryBackground;
 import com.kennycason.kumo.font.scale.LinearFontScalar;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
+import com.kennycason.kumo.palette.ColorPalette;
 import com.kennycason.kumo.palette.LinearGradientColorPalette;
 
 import eu.erbs.debates.AnalysisChain.Politician;
@@ -43,8 +44,11 @@ public class WordCloudGenerator {
 		final PolarWordCloud wordCloud = new PolarWordCloud(dimension, CollisionMode.PIXEL_PERFECT, PolarBlendMode.BLUR);
 		wordCloud.setPadding(2);
 		wordCloud.setBackground(new CircleBackground(300));
+		wordCloud.setBackgroundColor(Color.WHITE);
 		wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
-		wordCloud.build(wordFrequencies1, wordFrequencies2);
+		ColorPalette democrats = new ColorPalette(new Color(0,0,255),new Color(20,50,205),new Color(10,50,235),new Color(50,10,225));
+		wordCloud.setColorPalette(democrats);
+		wordCloud.build(wordFrequencies2, wordFrequencies1);
 		wordCloud.writeToFile("output/wordcloud/difference.png");
 	}
 
@@ -53,7 +57,7 @@ public class WordCloudGenerator {
 		final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
 		// frequencyAnalyzer.setStopWords(FileUtils.readLines(new
 		// File("src/main/resources/stopwords.txt")));
-		frequencyAnalyzer.setWordFrequenciesToReturn(200);
+		frequencyAnalyzer.setWordFrequenciesToReturn(400);
 
 		final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(words);
 		final Dimension dimension = new Dimension(550, 550);
@@ -70,7 +74,7 @@ public class WordCloudGenerator {
 		}
 
 		// wordCloud.setBackground(new RectangleBackground(dimension));
-		wordCloud.setColorPalette(new LinearGradientColorPalette(Color.green, Color.blue, 8));
+		wordCloud.setColorPalette(new LinearGradientColorPalette(Color.red, Color.blue, 8));
 		wordCloud.setFontScalar(new LinearFontScalar(8, 40));
 		wordCloud.setBackgroundColor(Color.white);
 
