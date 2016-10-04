@@ -92,10 +92,10 @@ public class AnalysisChain {
 		System.out.println("Clinton categories:\t" + StringUtils.join(clintonCategories, ", "));
 //		createWordClouds(trumpEntityNames, clintonEntityNames);
 
-//		List<String> trumpCategoryNames = getCategoryNames(trumpCategories, Politician.Trump);
-//		System.out.println("Loaded " + trumpCategoryNames.size() + " category names for Trump");
-//		List<String> clintonCategoryNames = getCategoryNames(clintonCategories, Politician.Clinton);
-//		System.out.println("Loaded " + clintonCategoryNames.size() + " category names for Clinton");
+		System.out.println("Loaded " + trumpCategories.size() + " categories for Trump");
+		System.out.println("Loaded " + clintonCategories.size() + " categories for Clinton");
+		List<String> trumpCategoryNames = getCategoryNames(trumpCategories, Politician.Trump);
+		List<String> clintonCategoryNames = getCategoryNames(clintonCategories, Politician.Clinton);
 		
 		
 }
@@ -140,6 +140,7 @@ public class AnalysisChain {
 		else{
 			entityNames = new ArrayList<>();
 			String name;
+			int counter = 0;
 			for(String entityId : entities){
 				name = AmbiverseConnector.getName(entityId);
 				if(name !=  null){
@@ -199,12 +200,6 @@ public class AnalysisChain {
 		}
 
 		return categories;
-	}
-
-	private static void createWordClounds(List<TalkEvent> trumpTalks, List<TalkEvent> clintonTalks) throws UIMAException, IOException {
-		List<String> trumpWords = getWords(trumpTalks);
-		List<String> clintonWords = getWords(clintonTalks);
-		createWordClouds(trumpWords, clintonWords);
 	}
 
 	private static void createWordClouds(List<String> trumpWords, List<String> clintonWords) throws IOException {

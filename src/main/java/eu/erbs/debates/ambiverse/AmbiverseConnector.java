@@ -118,7 +118,8 @@ public class AmbiverseConnector {
 			for (Entity entity : entities.getEntities()) {
 				nameMapper.put(entityId, entity.getName());
 				//Don't go to hard on Ambiverse API...
-				Thread.sleep(10000);
+				System.out.println("Searching ambiverse for name of " + entityId);
+				Thread.sleep(100);
 				return entity.getName();
 			}
 		}
