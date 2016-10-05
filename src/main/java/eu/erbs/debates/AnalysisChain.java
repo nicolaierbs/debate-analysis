@@ -1,15 +1,20 @@
 package eu.erbs.debates;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UIMAException;
@@ -32,6 +37,8 @@ import eu.erbs.debates.wordcloud.WordCloudGenerator;
 public class AnalysisChain {
 
 	public enum Politician {Trump,Clinton};
+	
+	public static Map<String, Double> totalCountryFrequencies = new HashMap<>(); 
 
 	private static final String[] INTERESTING_WORDS = new String[]{
 			"tremendous", "wrong", "country", "great", "correct", "right", "false",
@@ -75,53 +82,64 @@ public class AnalysisChain {
 			System.out.println(analysator.analyse(clintonTalks));
 			System.out.print("Pence:\t\t");
 			System.out.println(analysator.analyse(penceTalks));
-			System.out.print("Kaine:\t");
+			System.out.print("Kaine:\t\t");
 			System.out.println(analysator.analyse(kaineTalks));
 		}
 
-		System.out.println("Trump/Clinton (Ambiverse)");
-		ambiverseAnalytics(trumpTalks, clintonTalks);
-		System.out.println("Pence/Kaine (Ambiverse)");
-		ambiverseAnalytics(penceTalks, kaineTalks);
-
+		System.out.println();
+		System.out.println("--- Trump (Ambiverse) ---");
+		ambiverseAnalytics(trumpTalks);
+		System.out.println();
+		System.out.println("--- Clinton (Ambiverse) ---");
+		ambiverseAnalytics(clintonTalks);
+		System.out.println();
+		System.out.println("--- Pence (Ambiverse) ---");
+		ambiverseAnalytics(penceTalks);
+		System.out.println();
+		System.out.println("--- Kaine (Ambiverse) ---");
+		ambiverseAnalytics(kaineTalks);
+		
 	}
 
-	private static void ambiverseAnalytics(List<TalkEvent> trumpTalks, List<TalkEvent> clintonTalks)
+	private static void ambiverseAnalytics(List<TalkEvent> talks)
 			throws IOException, InterruptedException, ClassNotFoundException, FileNotFoundException {
 
-		List<String> trumpEntities = getEntities(trumpTalks);
-		System.out.println("Loaded " + trumpEntities.size() + " entities for Trump");
-		List<String> clintonEntities = getEntities(clintonTalks);
-		System.out.println("Loaded " + clintonEntities.size() + " entities for Clinton");
-		AmbiverseConnector.serialize();
-
-		List<String> trumpCategories = getCategories(trumpEntities);
-		System.out.println("Loaded " + trumpCategories.size() + " categories for Trump");
-		List<String> clintonCategories = getCategories(clintonEntities);
-		System.out.println("Loaded " + clintonCategories.size() + " categories for Clinton");
-		AmbiverseConnector.serialize();
-
-		List<String> trumpEntityNames = getNames(trumpEntities);
-		System.out.println("Loaded " + trumpEntityNames.size() + " entity names for Trump");
-		List<String> clintonEntityNames = getNames(clintonEntities);
-		System.out.println("Loaded " + clintonEntityNames.size() + " entity names for Clinton");
+		List<String> entities = getEntities(talks);
+		List<String> categories = getCategories(entities);
+		List<String> entityNames = getNames(entities);
+		List<String> categoryNames = getNames(categories);
 		AmbiverseConnector.serialize();
 		
-		IsolatedMostFrequentWordAnalysator mostFrequentWords = new IsolatedMostFrequentWordAnalysator(20);
-		System.out.print("Trump's most frequent entities:\t");
-		System.out.println(mostFrequentWords.analyseTokens(trumpEntityNames));
-		System.out.print("Clinton's most frequent entities:\t");
-		System.out.println(mostFrequentWords.analyseTokens(clintonEntityNames));
-
-		System.out.println("Trump categories:\t" + StringUtils.join(trumpCategories, ", "));
-		System.out.println("Clinton categories:\t" + StringUtils.join(clintonCategories, ", "));
+		System.out.println("Loaded " + entities.size() + " entities, " + entityNames.size() + " entity names, " + categories.size() + " categories, and" + categoryNames.size() + " category names." );
+			
+		IsolatedMostFrequentWordAnalysator mostFrequentWords = new IsolatedMostFrequentWordAnalysator(1000);
+		Map<String, Double> countryFrequencies = mostFrequentWords.analyseTokens(entityNames);
+		for(Entry<String,Double> entry : countryFrequencies.entrySet()){
+			if(totalCountryFrequencies.keySet().contains(entry.getKey())){
+				totalCountryFrequencies.put(entry.getKey(), totalCountryFrequencies.get(entry.getKey()) + entry.getValue());
+			}
+			else{
+				totalCountryFrequencies.put(entry.getKey(), entry.getValue());
+			}
+		}
+		exportCountryFrequencies(totalCountryFrequencies);
+		
+//		System.out.print("Most frequent entities:\t");
+//		System.out.println(mostFrequentWords.analyseTokens(entityNames));
+//		System.out.print("Most frequent categories:\t");
+//		System.out.println(mostFrequentWords.analyseTokens(categories));
+		
 		//		createWordClouds(trumpEntityNames, clintonEntityNames);
+	}
 
-		System.out.println("Loaded " + trumpCategories.size() + " categories for Trump");
-		System.out.println("Loaded " + clintonCategories.size() + " categories for Clinton");
-		List<String> trumpCategoryNames = getNames(trumpCategories);
-		List<String> clintonCategoryNames = getNames(clintonCategories);
-		AmbiverseConnector.serialize();
+	private static void exportCountryFrequencies(Map<String,Double> countryFrequencies) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("output/" + new Date().getTime() + ".csv")));
+		writer.write("Country,Frequency");
+		for(Entry<String, Double> pair : countryFrequencies.entrySet()){
+			writer.newLine();
+			writer.write(pair.getKey() + "," + Math.round(pair.getValue()));
+		}
+		writer.close();
 	}
 
 	private static List<String> getNames(List<String> entities) throws IOException, InterruptedException, ClassNotFoundException {

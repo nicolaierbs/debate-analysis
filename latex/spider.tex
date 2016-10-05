@@ -220,18 +220,20 @@
 \begin{tikzpicture}
 \tkzKiviatDiagram[label distance=4cm,
  radial = 20,
- gap = 0.85, 
- lattice = 9]{Flesch-Kincaid, Gunning fog, SMOG, Coleman-Liau, ARI}
+ gap = 0.80, 
+ lattice = 10]{Flesch-Kincaid, Gunning fog, SMOG, Coleman-Liau, ARI}
 
 %Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
 %Cameron      	28960    4.16   18.92    9.89   	70.07   10.06    	7.98    	5.00   	10.70    	7.57   		10.62 
 %\tkzKiviatLine[ultra thick,color=red, fill=black!20,opacity=.5](7.57, 10.62, 10.06, 10.70, 7.98) 
 \tkzKiviatLine[ultra thick,color=red, fill=black!20,opacity=.5](3.874,6.874,7.417,8.157,3.507) 
+\tkzKiviatLine[thick, color=red, fill=black!20,opacity=.2](7.373,10.329,9.805,10.281,7.636) 
 
 %Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
 %Johnson       		12300    4.20   29.29    8.91   	59.81   12.27   	12.62   8.00   	10.53   	11.37   		14.81 
 %\tkzKiviatLine[ultra thick,color=blue,mark=none, fill=blue!20,opacity=.5](11.37, 14.81, 12.27, 10.53, 12.62)
 \tkzKiviatLine[ultra thick,color=blue,mark=none, fill=blue!20,opacity=.5](6.186,9.423,9.127,9.123,6.233)
+\tkzKiviatLine[thick, color=blue,mark=none, fill=blue!20,opacity=.2](6.188,9.305,9.249,10.122,6.248)
 
 %Politician   		tokens     c/w     w/s  lexdiv  	flesch    smog     	ari     	lix 		col_lia 		kincaid     fog  
 %Shakespeare   	29866    3.43   19.26    9.50   	90.72    6.65    	4.70    	0.00    	7.40    		4.37    		7.23 
@@ -245,8 +247,10 @@
 \tkzKiviatGrad[unity=2](0)
 %\tkzKiviatGrad[](0)
 
-\node[draw=none, color=red, font=\Large] at (-1.5,4) {Trump};
-\node[draw=none, color=blue, font=\Large] at (5,4) {Clinton};
+\node[draw=none, color=red, font=\Large] at (-1.5,3.7) {Trump};
+\node[draw=none, color=blue, font=\Large] at (4.7,3.7) {Clinton};
+\node[draw=none, color=red, font=\small] at (3.2,-5) {Pence};
+\node[draw=none, color=blue, font=\small] at (-1.5,-5) {Kaine};
 \end{tikzpicture}
 
 \caption{Profil der geschriebenen Texte von Kindern und Erwachsenen auf Basis ausgewählter Merkmale.}

@@ -167,10 +167,6 @@ public class AmbiverseConnector {
 					.get(entityId)
 					.execute();
 
-			if(entities.getEntities().size() != 1){
-				System.out.println("Critical: Found " + entities.getEntities().size() + " entities for id " + entityId);
-			}
-
 			for (Entity entity : entities.getEntities()) {
 				nameMapper.put(entityId, entity.getName());
 				//Don't go to hard on Ambiverse API...
