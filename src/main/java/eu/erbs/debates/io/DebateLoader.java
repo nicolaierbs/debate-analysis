@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 
 import eu.erbs.debates.model.TalkEvent;
 
-public class DebateLoader {
+public class DebateLoader { 
 
 	public final static String TRUMP = "TRUMP: ";
 	public final static String CLINTON = "CLINTON: ";
