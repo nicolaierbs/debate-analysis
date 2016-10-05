@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UIMAException;
@@ -16,6 +17,7 @@ import org.apache.uima.UIMAException;
 import eu.erbs.debates.ambiverse.AmbiverseConnector;
 import eu.erbs.debates.analysis.DebateAnalysator;
 import eu.erbs.debates.analysis.DiversityAnalysator;
+import eu.erbs.debates.analysis.IsolatedMostFrequentWordAnalysator;
 import eu.erbs.debates.analysis.LengthAnalysator;
 import eu.erbs.debates.analysis.MostFrequentWordsAnalysator;
 import eu.erbs.debates.analysis.ReadabilityAnalysator;
@@ -77,7 +79,9 @@ public class AnalysisChain {
 			System.out.println(analysator.analyse(kaineTalks));
 		}
 
+		System.out.println("Trump/Clinton (Ambiverse)");
 		ambiverseAnalytics(trumpTalks, clintonTalks);
+		System.out.println("Pence/Kaine (Ambiverse)");
 		ambiverseAnalytics(penceTalks, kaineTalks);
 
 	}
@@ -102,6 +106,12 @@ public class AnalysisChain {
 		List<String> clintonEntityNames = getNames(clintonEntities);
 		System.out.println("Loaded " + clintonEntityNames.size() + " entity names for Clinton");
 		AmbiverseConnector.serialize();
+		
+		IsolatedMostFrequentWordAnalysator mostFrequentWords = new IsolatedMostFrequentWordAnalysator(20);
+		System.out.print("Trump's most frequent entities:\t");
+		System.out.println(mostFrequentWords.analyseTokens(trumpEntityNames));
+		System.out.print("Clinton's most frequent entities:\t");
+		System.out.println(mostFrequentWords.analyseTokens(clintonEntityNames));
 
 		System.out.println("Trump categories:\t" + StringUtils.join(trumpCategories, ", "));
 		System.out.println("Clinton categories:\t" + StringUtils.join(clintonCategories, ", "));
