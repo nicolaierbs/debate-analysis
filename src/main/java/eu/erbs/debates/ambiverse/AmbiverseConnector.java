@@ -1,6 +1,12 @@
 package eu.erbs.debates.ambiverse;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +30,13 @@ public class AmbiverseConnector {
 
 	private static AmbiverseApiClient client = null;
 
-	private static Map<String,List<String>> categoryMapper;
+	private static final File SERIALIZED_DIRECTORY = new File("output/serialized");
+	private static final File ENTITY_MAPPER_FILE = new File(SERIALIZED_DIRECTORY, "entitymapper.ser");
+	private static final File CATEGORY_MAPPER_FILE = new File(SERIALIZED_DIRECTORY, "categorymapper.ser");
+	private static final File NAME_MAPPER_FILE = new File(SERIALIZED_DIRECTORY, "namemapper.ser");
 
+	private static Map<String,List<String>> entityMapper;
+	private static Map<String,List<String>> categoryMapper;
 	private static Map<String,String> nameMapper;
 
 	/** Global instance of the JSON factory. */
@@ -35,43 +46,91 @@ public class AmbiverseConnector {
 	private static HttpTransport httpTransport = new NetHttpTransport();
 
 
-	private static void initialize() throws IOException{
+	@SuppressWarnings("unchecked")
+	private static void initialize() throws IOException, ClassNotFoundException{
 		Credential credential = AmbiverseApiClient.authorize(httpTransport, JSON_FACTORY);
 
 		// Instantiate a new API client
 		client = new AmbiverseApiClient(httpTransport, JSON_FACTORY, credential);
-	}
 
-	public static List<String> getEntities(String text) throws IOException{
-
-		if(client == null){
-			initialize();
+		if(ENTITY_MAPPER_FILE.exists()){
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(ENTITY_MAPPER_FILE));
+			entityMapper = (HashMap<String,List<String>>) in.readObject();
+			in.close();
 		}
-
-		List<String> entities = new ArrayList<>();
-
-		AnalyzeInput input = new AnalyzeInput()
-				.withLanguage("en")		// Optional. If not set, language detection happens automatically.
-				.withText(text);
-
-		AnalyzeOutput output = client.entityLinking().analyze().process(input).execute();
-
-
-		for (Match match : output.getMatches()) {
-			entities.add(match.getEntity().getId());
+		else{
+			entityMapper = new HashMap<>();
 		}
-		System.out.println("Extracted " + StringUtils.join(entities, ", ") + " from:\t" + text);
-		return entities;
-	}
-
-	public static List<String> getCategories(String entityId) throws IOException, InterruptedException{
-
-		if(client == null){
-			initialize();
+		
+		if(CATEGORY_MAPPER_FILE.exists()){
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(CATEGORY_MAPPER_FILE));
+			categoryMapper = (HashMap<String,List<String>>) in.readObject();
+			in.close();
 		}
-
-		if(categoryMapper == null){
+		else{
 			categoryMapper = new HashMap<>();
+		}
+		
+		if(NAME_MAPPER_FILE.exists()){
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(NAME_MAPPER_FILE));
+			nameMapper = (HashMap<String,String>) in.readObject();
+			in.close();
+		}
+		else{
+			nameMapper = new HashMap<>();
+		}
+	}
+	
+	public static void serialize() throws FileNotFoundException, IOException{
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(ENTITY_MAPPER_FILE));
+		out.writeObject(entityMapper);
+		out.close();
+
+		out = new ObjectOutputStream(new FileOutputStream(CATEGORY_MAPPER_FILE));
+		out.writeObject(categoryMapper);
+		out.close();
+
+		out = new ObjectOutputStream(new FileOutputStream(NAME_MAPPER_FILE));
+		out.writeObject(nameMapper);
+		out.close();
+}
+
+	public static List<String> getEntities(String text) throws IOException, InterruptedException, ClassNotFoundException{
+
+		if(client == null){
+			initialize();
+		}
+
+		if(entityMapper.containsKey(text)){
+			return entityMapper.get(text);
+		}
+		else{
+
+			List<String> entities = new ArrayList<>();
+
+			AnalyzeInput input = new AnalyzeInput()
+					.withLanguage("en")		// Optional. If not set, language detection happens automatically.
+					.withText(text);
+
+			AnalyzeOutput output = client.entityLinking().analyze().process(input).execute();
+
+			//Don't go to hard on Ambiverse API...
+			Thread.sleep(10000);
+
+
+			for (Match match : output.getMatches()) {
+				entities.add(match.getEntity().getId());
+			}
+			System.out.println("Extracted " + StringUtils.join(entities, ", ") + " from:\t" + text);
+			entityMapper.put(text, entities);
+			return entities;
+		}
+	}
+
+	public static List<String> getCategories(String entityId) throws IOException, InterruptedException, ClassNotFoundException{
+
+		if(client == null){
+			initialize();
 		}
 
 		if(categoryMapper.containsKey(entityId)){
@@ -86,21 +145,18 @@ public class AmbiverseConnector {
 			for (Entity entity : entities.getEntities()) {
 				categories.addAll(entity.getCategories());
 			}
+			System.out.println("Extracted " + StringUtils.join(categories, ", ") + " from:\t" + entityId);
 			categoryMapper.put(entityId, categories);
 			//Don't go to hard on Ambiverse API...
 			Thread.sleep(10000);
 			return categories;
 		}
 	}
-	
-	public static String getName(String entityId) throws IOException, InterruptedException{
+
+	public static String getName(String entityId) throws IOException, InterruptedException, ClassNotFoundException{
 
 		if(client == null){
 			initialize();
-		}
-
-		if(nameMapper == null){
-			nameMapper = new HashMap<>();
 		}
 
 		if(nameMapper.containsKey(entityId)){
@@ -110,7 +166,7 @@ public class AmbiverseConnector {
 			Entities entities = client.knowledgeGraph().entities()
 					.get(entityId)
 					.execute();
-			
+
 			if(entities.getEntities().size() != 1){
 				System.out.println("Critical: Found " + entities.getEntities().size() + " entities for id " + entityId);
 			}

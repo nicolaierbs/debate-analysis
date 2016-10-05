@@ -35,7 +35,10 @@ public class AnalysisChain {
 
 	private static final File stopwordFile = new File("src/main/resources/stopwords.txt");
 	public static void main(String[] args) throws Exception {
-		List<TalkEvent> talkEvents = DebateLoader.loadDebate("TrumpClinton1.txt");
+		List<TalkEvent> talkEvents = new ArrayList<>();
+		
+		talkEvents.addAll(DebateLoader.loadDebate("TrumpClinton1.txt"));
+		talkEvents.addAll(DebateLoader.loadDebate("KainePence.txt"));
 
 
 		Filter trumpFilter = new SpeakerFilter("TRUMP: ");
@@ -47,11 +50,11 @@ public class AnalysisChain {
 		//		createWordClounds(trumpTalks, clintonTalks);
 
 		List<DebateAnalysator> analysators = new ArrayList<>();
-//		analysators.add(new LengthAnalysator());
-//		analysators.add(new DiversityAnalysator());
-//		analysators.add(new ReadabilityAnalysator());
-//		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
-//		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
+		//		analysators.add(new LengthAnalysator());
+		//		analysators.add(new DiversityAnalysator());
+		//		analysators.add(new ReadabilityAnalysator());
+		//		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
+		//		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
 
 
 		for(DebateAnalysator analysator : analysators){
@@ -77,126 +80,70 @@ public class AnalysisChain {
 		System.out.println("Loaded " + trumpEntities.size() + " entities for Trump");
 		List<String> clintonEntities = getEntities(clintonTalks, Politician.Clinton);
 		System.out.println("Loaded " + clintonEntities.size() + " entities for Clinton");
+		AmbiverseConnector.serialize();
 
 		List<String> trumpCategories = getCategories(trumpEntities, Politician.Trump);
 		System.out.println("Loaded " + trumpCategories.size() + " categories for Trump");
 		List<String> clintonCategories = getCategories(clintonEntities, Politician.Clinton);
 		System.out.println("Loaded " + clintonCategories.size() + " categories for Clinton");
+		AmbiverseConnector.serialize();
 
 		List<String> trumpEntityNames = getEntityNames(trumpEntities, Politician.Trump);
 		System.out.println("Loaded " + trumpEntityNames.size() + " entity names for Trump");
 		List<String> clintonEntityNames = getEntityNames(clintonEntities, Politician.Clinton);
 		System.out.println("Loaded " + clintonEntityNames.size() + " entity names for Clinton");
-		
+		AmbiverseConnector.serialize();
+
 		System.out.println("Trump categories:\t" + StringUtils.join(trumpCategories, ", "));
 		System.out.println("Clinton categories:\t" + StringUtils.join(clintonCategories, ", "));
-//		createWordClouds(trumpEntityNames, clintonEntityNames);
+		//		createWordClouds(trumpEntityNames, clintonEntityNames);
 
 		System.out.println("Loaded " + trumpCategories.size() + " categories for Trump");
 		System.out.println("Loaded " + clintonCategories.size() + " categories for Clinton");
 		List<String> trumpCategoryNames = getCategoryNames(trumpCategories, Politician.Trump);
 		List<String> clintonCategoryNames = getCategoryNames(clintonCategories, Politician.Clinton);
-		
-		
-}
+		AmbiverseConnector.serialize();
+	}
 
-	@SuppressWarnings("unchecked")
 	private static List<String> getEntityNames(List<String> entities, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
-		File serialized = new File("output/serialized/"+politician.name()+"_entitynames.ser");
 
-		List<String> entityNames = null;
-		if(serialized.exists()){
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(serialized));
-			entityNames = (List<String>) in.readObject();
-			in.close();
-		}
-		else{
-			entityNames = new ArrayList<>();
-			String name;
-			for(String entityId : entities){
-				name = AmbiverseConnector.getName(entityId);
-				if(name !=  null){
-					entityNames.add(name);
-				}
+		List<String> entityNames = new ArrayList<>();
+		String name;
+		for(String entityId : entities){
+			name = AmbiverseConnector.getName(entityId);
+			if(name !=  null){
+				entityNames.add(name);
 			}
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(serialized));
-			out.writeObject(entityNames);
-			out.close();
 		}
-
 		return entityNames;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<String> getCategoryNames(List<String> entities, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
-		File serialized = new File("output/serialized/"+politician.name()+"_categorynames.ser");
-
 		List<String> entityNames = null;
-		if(serialized.exists()){
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(serialized));
-			entityNames = (List<String>) in.readObject();
-			in.close();
-		}
-		else{
-			entityNames = new ArrayList<>();
-			String name;
-			int counter = 0;
-			for(String entityId : entities){
-				name = AmbiverseConnector.getName(entityId);
-				if(name !=  null){
-					entityNames.add(name);
-				}
+		entityNames = new ArrayList<>();
+		String name;
+		for(String entityId : entities){
+			name = AmbiverseConnector.getName(entityId);
+			if(name !=  null){
+				entityNames.add(name);
 			}
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(serialized));
-			out.writeObject(entityNames);
-			out.close();
 		}
-
 		return entityNames;
 	}
 
 	private static List<String> getEntities(List<TalkEvent> talkEvents, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
-		File serialized = new File("output/serialized/"+politician.name()+"_entities.ser");
-
-		List<String> entities = null;
-		if(serialized.exists()){
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(serialized));
-			entities = (List<String>) in.readObject();
-			in.close();
+		List<String> entities = new ArrayList<>();
+		for(TalkEvent talkEvent : talkEvents){
+			entities.addAll(AmbiverseConnector.getEntities(talkEvent.getText()));
 		}
-		else{
-			entities = new ArrayList<>();
-			for(TalkEvent talkEvent : talkEvents){
-				entities.addAll(AmbiverseConnector.getEntities(talkEvent.getText()));
-				//Don't go to hard on Ambiverse API...
-				Thread.sleep(10000);
-			}
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(serialized));
-			out.writeObject(entities);
-			out.close();
-		}
-
 		return entities;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List<String> getCategories(List<String> entities, Politician politician) throws IOException, InterruptedException, ClassNotFoundException {
-		File serialized = new File("output/serialized/"+politician.name()+"_categories.ser");
-
 		List<String> categories = null;
-		if(serialized.exists()){
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(serialized));
-			categories = (List<String>) in.readObject();
-			in.close();
-		}
-		else{
-			categories = new ArrayList<>();
-			for(String entityId :  entities){
-				categories.addAll(AmbiverseConnector.getCategories(entityId));
-			}
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(serialized));
-			out.writeObject(categories);
-			out.close();
+		categories = new ArrayList<>();
+		for(String entityId :  entities){
+			categories.addAll(AmbiverseConnector.getCategories(entityId));
 		}
 
 		return categories;

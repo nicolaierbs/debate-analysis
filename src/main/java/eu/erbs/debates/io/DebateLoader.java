@@ -14,10 +14,12 @@ import eu.erbs.debates.model.TalkEvent;
 
 public class DebateLoader {
 
-	private final static String TRUMP = "TRUMP: ";
-	private final static String CLINTON = "CLINTON: ";
-	private final static String HOLT = "HOLT: ";
-
+	public final static String TRUMP = "TRUMP: ";
+	public final static String CLINTON = "CLINTON: ";
+	public final static String HOLT = "HOLT: ";
+	public final static String QUIJANO = "QUIJANO: ";
+	public final static String KAINE = "KAINE: ";
+	public final static String PENCE = "PENCE: ";
 
 	private final static File DIRECTORY =  new File("src/main/resources");
 	
@@ -35,7 +37,7 @@ public class DebateLoader {
 
 		//Remove applause and other annotations
 		content = content.replaceAll("\\(.*\\)", "");
-		String patternString = "((" + TRUMP + "|" +  CLINTON + "|" +  HOLT + ")(.*))";
+		String patternString = "((" + TRUMP + "|" +  CLINTON + "|" +  HOLT + "|" +  PENCE + "|" +  QUIJANO + "|" +  KAINE + ")(.*))";
 		Pattern pattern = Pattern.compile(patternString);
 		Matcher matcher = pattern.matcher(content);
 
