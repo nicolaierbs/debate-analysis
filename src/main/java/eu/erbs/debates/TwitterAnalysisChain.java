@@ -31,6 +31,7 @@ import eu.erbs.debates.filter.Filter;
 import eu.erbs.debates.filter.SpeakerFilter;
 import eu.erbs.debates.io.DebateLoader;
 import eu.erbs.debates.io.TwitterLoader;
+import eu.erbs.debates.io.utils.TwitterHandleLoader;
 import eu.erbs.debates.model.TalkEvent;
 import eu.erbs.debates.utils.DKProUtils;
 import eu.erbs.debates.wordcloud.WordCloudGenerator;
@@ -42,61 +43,30 @@ public class TwitterAnalysisChain {
 	private static final File stopwordFile = new File("src/main/resources/stopwords.txt");
 
 	public static void main(String[] args) throws Exception {
-		List<TalkEvent> talkEvents = new ArrayList<>();
-		
-		String[] twitterHandles = new String[]{"realDonaldTrump","KellyannePolls","FraukePetry","AngelaMerkelCDU"};
-		
+		List<TalkEvent> talkEvents;
+
 		TwitterLoader twitterLoader = new TwitterLoader();
-		for(String twitterHandle : twitterHandles){
-			talkEvents.addAll(twitterLoader.getTweets(twitterHandle));
-		}
-
-		Filter trumpFilter = new SpeakerFilter(DebateLoader.TRUMP);
-		List<TalkEvent> trumpTalks =  trumpFilter.filter(talkEvents);
-		Filter clintonFilter = new SpeakerFilter(DebateLoader.CLINTON);
-		List<TalkEvent> clintonTalks =  clintonFilter.filter(talkEvents);
-		Filter penceFilter = new SpeakerFilter(DebateLoader.PENCE);
-		List<TalkEvent> penceTalks =  penceFilter.filter(talkEvents);
-		Filter kaineFilter = new SpeakerFilter(DebateLoader.KAINE);
-		List<TalkEvent> kaineTalks =  kaineFilter.filter(talkEvents);
-
-		//		createWordClounds(trumpTalks, clintonTalks);
 
 		List<DebateAnalysator> analysators = new ArrayList<>();
 		analysators.add(new LengthAnalysator());
 		analysators.add(new DiversityAnalysator());
 		analysators.add(new ReadabilityAnalysator());
-//		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
+		//		analysators.add(new WordCountAnalysator(INTERESTING_WORDS));
 		analysators.add(new MostFrequentWordsAnalysator(15,stopwordFile));
 
+		Map<String, String> twitterHandles = TwitterHandleLoader.getBundestwitterPoliticians();
+		for(String twitterHandle : twitterHandles.keySet()){
+			talkEvents = new ArrayList<>();
+			talkEvents.addAll(twitterLoader.getTweets(twitterHandle));
+			System.out.print(twitterHandle + "\t" + twitterHandles.get(twitterHandle) + "\t");
 
-		for(DebateAnalysator analysator : analysators){
-			System.out.println();
-			System.out.println(analysator.getName());
-			//			System.out.print("All:\t\t");
-			//			System.out.println(analysator.analyse(talkEvents));
-			for(String twitterHandle : twitterHandles){
-				System.out.print(twitterHandle + ":\t\t");
-				System.out.println(analysator.analyse(new SpeakerFilter(twitterHandle).filter(talkEvents)));
+			for(DebateAnalysator analysator : analysators){
+				//			System.out.print("All:\t\t");
+				//			System.out.println(analysator.analyse(talkEvents));
+				
+				System.out.print(analysator.analyse(talkEvents));
 			}
-		}
-		
-		
-//		System.out.println();
-//		System.out.println("--- Trump (Ambiverse) ---");
-//		ambiverseAnalytics(trumpTalks);
-//		System.out.println();
-//		System.out.println("--- Clinton (Ambiverse) ---");
-//		ambiverseAnalytics(clintonTalks);
-//		System.out.println();
-//		System.out.println("--- Pence (Ambiverse) ---");
-//		ambiverseAnalytics(penceTalks);
-//		System.out.println();
-//		System.out.println("--- Kaine (Ambiverse) ---");
-//		ambiverseAnalytics(kaineTalks);
-		
-//		createWordClouds(trumpEntities, clintonEntities);
-
+		}	
 	}
 
 	private static void ambiverseAnalytics(List<TalkEvent> talks)
@@ -107,9 +77,9 @@ public class TwitterAnalysisChain {
 		List<String> entityNames = getNames(entities);
 		List<String> categoryNames = getNames(categories);
 		AmbiverseConnector.serialize();
-		
+
 		System.out.println("Loaded " + entities.size() + " entities, " + entityNames.size() + " entity names, " + categories.size() + " categories, and" + categoryNames.size() + " category names." );
-			
+
 		IsolatedMostFrequentWordAnalysator mostFrequentWords = new IsolatedMostFrequentWordAnalysator(10);
 		Map<String, Double> countryFrequencies = mostFrequentWords.analyseTokens(entityNames);
 		for(Entry<String,Double> entry : countryFrequencies.entrySet()){
@@ -120,13 +90,13 @@ public class TwitterAnalysisChain {
 				totalCountryFrequencies.put(entry.getKey(), entry.getValue());
 			}
 		}
-//		exportCountryFrequencies(totalCountryFrequencies);
-		
+		//		exportCountryFrequencies(totalCountryFrequencies);
+
 		System.out.print("Most frequent entities:\t");
 		System.out.println(mostFrequentWords.analyseTokens(entityNames));
-//		System.out.print("Most frequent categories:\t");
-//		System.out.println(mostFrequentWords.analyseTokens(categories));
-		
+		//		System.out.print("Most frequent categories:\t");
+		//		System.out.println(mostFrequentWords.analyseTokens(categories));
+
 		//		createWordClouds(trumpEntityNames, clintonEntityNames);
 	}
 
@@ -152,7 +122,7 @@ public class TwitterAnalysisChain {
 		}
 		return entityNames;
 	}
-	
+
 	private static List<String> getEntities(List<TalkEvent> talkEvents) throws IOException, InterruptedException, ClassNotFoundException {
 		List<String> entities = new ArrayList<>();
 		for(TalkEvent talkEvent : talkEvents){
@@ -171,13 +141,13 @@ public class TwitterAnalysisChain {
 		return categories;
 	}
 
-//	private static void createWordClouds(List<String> trumpWords, List<String> clintonWords) throws IOException {
-//		trumpWords = removeNull(trumpWords);
-//		clintonWords = removeNull(clintonWords);
-//		WordCloudGenerator.createWordCloud(trumpWords, Politician.Trump);
-//		WordCloudGenerator.createWordCloud(clintonWords, Politician.Clinton);
-//		WordCloudGenerator.createDifferenceWordCloud(trumpWords, clintonWords);
-//	}
+	//	private static void createWordClouds(List<String> trumpWords, List<String> clintonWords) throws IOException {
+	//		trumpWords = removeNull(trumpWords);
+	//		clintonWords = removeNull(clintonWords);
+	//		WordCloudGenerator.createWordCloud(trumpWords, Politician.Trump);
+	//		WordCloudGenerator.createWordCloud(clintonWords, Politician.Clinton);
+	//		WordCloudGenerator.createDifferenceWordCloud(trumpWords, clintonWords);
+	//	}
 
 	private static List<String> removeNull(List<String> words) {
 		List<String> filtered = new ArrayList<>();
