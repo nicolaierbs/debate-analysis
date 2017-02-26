@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import eu.erbs.debates.model.TalkEvent;
 import eu.erbs.utils.PropertyUtils;
+import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -45,6 +46,11 @@ public class TwitterLoader {
 	}
 	
 	public List<TalkEvent> getTweets(String twitterHandle) throws TwitterException{
+		
+//		Query query = new Query(twitterHandle);
+//		query.setSince("2017-01-01");
+//		query.setUntil("2013-07-02");
+				 
 		List<TalkEvent> talkEvents = new ArrayList<>();
 		TalkEvent talkEvent;
 		for(Status status : twitter.getUserTimeline(twitterHandle)){
