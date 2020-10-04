@@ -15,6 +15,9 @@ import eu.erbs.debates.model.TalkEvent;
 public class DebateLoader { 
 
 	public final static String TRUMP = "TRUMP: ";
+	public final static String TRUMP2 = "TRUMP2: ";
+	public final static String BIDEN = "BIDEN: ";
+	public final static String WALLACE = "WALLACE";
 	public final static String CLINTON = "CLINTON: ";
 	public final static String HOLT = "HOLT: ";
 	public final static String QUIJANO = "QUIJANO: ";
@@ -24,7 +27,7 @@ public class DebateLoader {
 	private final static File DIRECTORY =  new File("src/main/resources");
 	
 	public static void main(String[] args) throws IOException{
-		loadDebate("TrumpClinton1.txt");
+		loadDebate("TrumpBiden.txt");
 
 	}
 
@@ -37,7 +40,7 @@ public class DebateLoader {
 
 		//Remove applause and other annotations
 		content = content.replaceAll("\\(.*\\)", "");
-		String patternString = "((" + TRUMP + "|" +  CLINTON + "|" +  HOLT + "|" +  PENCE + "|" +  QUIJANO + "|" +  KAINE + ")(.*))";
+		String patternString = "((" + TRUMP + "|" +  CLINTON + "|" +  TRUMP2 + "|" +  BIDEN + "|" +  WALLACE + "|" +  HOLT + "|" +  PENCE + "|" +  QUIJANO + "|" +  KAINE + ")(.*))";
 		Pattern pattern = Pattern.compile(patternString);
 		Matcher matcher = pattern.matcher(content);
 
